@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>forevermore</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    padding: 2em;
+    background: linear-gradient(to right, #fbd3e9, #bb377d);
+    color: white;
+    overflow-x: hidden;
+  }
+  .timer {
+    display: flex;
+    justify-content: center;
+    gap: 1em;
+    margin-bottom: 2em;
+  }
+  .unit {
+    background: rgba(255,255,255,0.2);
+    border-radius: 10px;
+    padding: 1em 1.5em;
+    min-width: 70px;
+  }
+  .value {
+    font-size: 2em;
+    font-weight: bold;
+  }
+  .label {
+    font-size: 1em;
+    opacity: 0.8;
+  }
+  .heart {
+    position: fixed;
+    bottom: -30px;
+    width: 80px;
+    height: 80px;
+    background: url('heart.png') no-repeat center;
+    background-size: contain;
+    animation: floatHearts 5s linear infinite;
+    pointer-events: none;
+    z-index: 999;
+  }
+  @keyframes floatHearts {
+    0% { transform: translateY(0) scale(1); opacity: 1; }
+    100% { transform: translateY(-100vh) scale(1.5); opacity: 0; }
+  }
+  #playButton {
+    background-color: #e91e63;
+    border: none;
+    padding: 15px 30px;
+    font-size: 1.2em;
+    color: white;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-bottom: 1em;
+  }
+</style>
+</head>
+<body>
+
+<h1>Desde siempre ❤️</h1>
+
+<div class="timer">
+  <div class="unit"><div class="value" id="years">0</div><div class="label">Years</div></div>
+  <div class="unit"><div class="value" id="days">0</div><div class="label">Days</div></div>
+  <div class="unit"><div class="value" id="hours">0</div><div class="label">Hours</div></div>
+  <div class="unit"><div class="value" id="minutes">0</div><div class="label">Minutes</div></div>
+  <div class="unit"><div class="value" id="seconds">0</div><div class="label">Seconds</div></div>
+</div>
+
+<button id="playButton">Play Sweet Music 🎵</button>
+
+<audio id="bgMusic" loop>
+  <source src="music.mp3" type="audio/mpeg" />
+  Your browser does not support the audio element.
+</audio>
+
+<script>
+  const startDate = new Date("2024-11-01T12:00:00");
+  const ids = ["years", "days", "hours", "minutes", "seconds"];
+
+  function updateTimer() {
+    const now = new Date();
+    const diff = now - startDate;
+    if (diff < 0) {
+      ids.forEach(id => document.getElementById(id).textContent = 0);
+      return;
+    }
+    const totalSeconds = Math.floor(diff / 1000);
+
+    const years = Math.floor(totalSeconds / (365.25 * 24 * 3600));
+    const days = Math.floor((totalSeconds % (365.25 * 24 * 3600)) / (24 * 3600));
+    const hours = Math.floor((totalSeconds % (24 * 3600)) / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+
+    const values = [years, days, hours, minutes, seconds];
+    ids.forEach((id, i) => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = values[i];
+    });
+  }
+
+  updateTimer();
+  setInterval(updateTimer, 1000);
+
+  function createHeart() {
+    const heart = document.createElement('div');
+    heart.className = 'heart';
+    heart.style.left = Math.random() * 100 + 'vw';
+    heart.style.animationDuration = (4 + Math.random() * 2) + 's';
+    document.body.appendChild(heart);
+    setTimeout(() => heart.remove(), 6000);
+  }
+  setInterval(createHeart, 400);
+
+  // Music play button
+  const playButton = document.getElementById('playButton');
+  const bgMusic = document.getElementById('bgMusic');
+
+  playButton.addEventListener('click', () => {
+    bgMusic.play().then(() => {
+      playButton.style.display = 'none';  // hide button after playing
+    }).catch(err => {
+      alert("Failed to play music: " + err.message);
+    });
+  });
+</script>
+
+</body>
+</html>
