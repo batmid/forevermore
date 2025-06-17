@@ -8,31 +8,46 @@
   body {
     font-family: Arial, sans-serif;
     text-align: center;
-    padding: 2em;
+    padding: 2em 1em;
     background: linear-gradient(to right, #fbd3e9, #bb377d);
     color: white;
     overflow-x: hidden;
+    margin: 0;
   }
-  .timer {
+
+  h1 {
+    margin-bottom: 1.5em;
+  }
+
+  .timer-row {
     display: flex;
     justify-content: center;
     gap: 1em;
-    margin-bottom: 2em;
+    margin-bottom: 1.5em;
   }
+
   .unit {
     background: rgba(255,255,255,0.2);
     border-radius: 10px;
-    padding: 1em 1.5em;
-    min-width: 70px;
+    padding: 1em 1.2em;
+    min-width: 65px;
+    flex: 1 1 60px;
+    max-width: 90px;
+    box-sizing: border-box;
   }
+
   .value {
-    font-size: 2em;
+    font-size: 1.8em;
     font-weight: bold;
+    line-height: 1;
   }
+
   .label {
     font-size: 1em;
     opacity: 0.8;
+    margin-top: 0.2em;
   }
+
   .heart {
     position: fixed;
     bottom: -30px;
@@ -44,10 +59,12 @@
     pointer-events: none;
     z-index: 999;
   }
+
   @keyframes floatHearts {
     0% { transform: translateY(0) scale(1); opacity: 1; }
     100% { transform: translateY(-100vh) scale(1.5); opacity: 0; }
   }
+
   #playButton {
     background-color: #e91e63;
     border: none;
@@ -58,15 +75,35 @@
     cursor: pointer;
     margin-bottom: 1em;
   }
+
+  /* Responsive tweaks */
+  @media (max-width: 400px) {
+    .unit {
+      min-width: 50px;
+      max-width: 70px;
+      padding: 0.8em 1em;
+    }
+    .value {
+      font-size: 1.5em;
+    }
+    #playButton {
+      font-size: 1em;
+      padding: 12px 24px;
+    }
+  }
 </style>
 </head>
 <body>
 
 <h1>Desde siempre ❤️</h1>
 
-<div class="timer">
+<div class="timer-row" id="row1">
   <div class="unit"><div class="value" id="years">0</div><div class="label">Years</div></div>
+  <div class="unit"><div class="value" id="months">0</div><div class="label">Months</div></div>
   <div class="unit"><div class="value" id="days">0</div><div class="label">Days</div></div>
+</div>
+
+<div class="timer-row" id="row2">
   <div class="unit"><div class="value" id="hours">0</div><div class="label">Hours</div></div>
   <div class="unit"><div class="value" id="minutes">0</div><div class="label">Minutes</div></div>
   <div class="unit"><div class="value" id="seconds">0</div><div class="label">Seconds</div></div>
@@ -81,33 +118,93 @@
 
 <script>
   const startDate = new Date("2024-11-01T12:00:00");
-  const ids = ["years", "days", "hours", "minutes", "seconds"];
 
   function updateTimer() {
     const now = new Date();
-    const diff = now - startDate;
+    let diff = now - startDate;
     if (diff < 0) {
-      ids.forEach(id => document.getElementById(id).textContent = 0);
+      // In case startDate is in future
+      ['years','months','days','hours','minutes','seconds'].forEach(id => {
+        document.getElementById(id).textContent = 0;
+      });
       return;
     }
-    const totalSeconds = Math.floor(diff / 1000);
 
-    const years = Math.floor(totalSeconds / (365.25 * 24 * 3600));
-    const days = Math.floor((totalSeconds % (365.25 * 24 * 3600)) / (24 * 3600));
-    const hours = Math.floor((totalSeconds % (24 * 3600)) / 3600);
-    const minutes = Math.floor((totalSeconds % 3600) / 60);
-    const seconds = totalSeconds % 60;
+    // Calculate years
+    const startYear = startDate.getFullYear();
+    const nowYear = now.getFullYear();
 
-    const values = [years, days, hours, minutes, seconds];
-    ids.forEach((id, i) => {
-      const el = document.getElementById(id);
-      if (el) el.textContent = values[i];
-    });
+    let years = nowYear - startYear;
+
+    // Calculate months and days by comparing month/day parts
+    let startMonth = startDate.getMonth();
+    let nowMonth = now.getMonth();
+    let months = nowMonth - startMonth;
+    if (months < 0) {
+      years--;
+      months += 12;
+    }
+
+    // Calculate days
+    let startDay = startDate.getDate();
+    let nowDay = now.getDate();
+    let days = nowDay - startDay;
+    if (days < 0) {
+      months--;
+      if (months < 0) {
+        months += 12;
+        years--;
+      }
+      // Days in previous month
+      const prevMonth = new Date(now.getFullYear(), now.getMonth(), 0).getDate();
+      days += prevMonth;
+    }
+
+    // Calculate hours, minutes, seconds
+    const startHour = startDate.getHours();
+    const startMinute = startDate.getMinutes();
+    const startSecond = startDate.getSeconds();
+
+    let hours = now.getHours() - startHour;
+    let minutes = now.getMinutes() - startMinute;
+    let seconds = now.getSeconds() - startSecond;
+
+    if (seconds < 0) {
+      seconds += 60;
+      minutes--;
+    }
+    if (minutes < 0) {
+      minutes += 60;
+      hours--;
+    }
+    if (hours < 0) {
+      hours += 24;
+      days--;
+      if (days < 0) {
+        months--;
+        if (months < 0) {
+          months += 12;
+          years--;
+        }
+        // days in previous month
+        const prevMonth = new Date(now.getFullYear(), now.getMonth(), 0).getDate();
+        days += prevMonth;
+      }
+    }
+
+    // Update DOM
+    document.getElementById('years').textContent = years;
+    document.getElementById('months').textContent = months;
+    document.getElementById('days').textContent = days;
+    document.getElementById('hours').textContent = hours;
+    document.getElementById('minutes').textContent = minutes;
+    document.getElementById('seconds').textContent = seconds;
   }
 
   updateTimer();
   setInterval(updateTimer, 1000);
 
+  // Floating hearts
   function createHeart() {
     const heart = document.createElement('div');
     heart.className = 'heart';
