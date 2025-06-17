@@ -6,59 +6,61 @@
 <title>forevermore</title>
 <style>
   body {
-    font-family: Arial, sans-serif;
-    text-align: center;
-    padding: 2em 1em;
-    background: linear-gradient(to right, #fbd3e9, #bb377d);
-    color: white;
-    overflow-x: hidden;
-    margin: 0;
-  }
+  font-family: Arial, sans-serif;
+  text-align: center;
+  padding: 2em 1em;
+  max-width: 420px;    /* limit max width for small screens */
+  margin: 0 auto;      /* center horizontally */
+  background: linear-gradient(to right, #fbd3e9, #bb377d);
+  color: white;
+  overflow-x: hidden;
+  position: relative;
+}
 
-  h1 {
-    margin-bottom: 1.5em;
-  }
+.timer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1em;
+  margin-bottom: 2em;
+  /* Removed max-width from here to let body control width */
+}
 
-  .timer-row {
-    display: flex;
-    justify-content: center;
-    gap: 1em;
-    margin-bottom: 1.5em;
-  }
+.unit {
+  background: rgba(255,255,255,0.2);
+  border-radius: 10px;
+  padding: 1em 1.2em;
+  min-width: 90px;      /* a bit bigger for readability */
+  flex: 1 1 40%;        /* 2 items per row roughly */
+  box-sizing: border-box;
+}
 
-  .unit {
-    background: rgba(255,255,255,0.2);
-    border-radius: 10px;
-    padding: 1em 1.2em;
-    min-width: 65px;
-    flex: 1 1 60px;
-    max-width: 90px;
-    box-sizing: border-box;
-  }
+.value {
+  font-size: 2em;      /* slightly bigger */
+  font-weight: bold;
+}
 
-  .value {
-    font-size: 1.8em;
-    font-weight: bold;
-    line-height: 1;
-  }
+.label {
+  font-size: 1.1em;
+  opacity: 0.85;
+}
 
-  .label {
-    font-size: 1em;
-    opacity: 0.8;
-    margin-top: 0.2em;
-  }
+.heart {
+  position: fixed;
+  bottom: -30px;
+  width: 20px;
+  height: 20px;
+  background: url('34a129d7-746b-4e9b-bdf4-c7a28f131e17.png') no-repeat center;
+  background-size: contain;
+  animation: floatHearts 5s linear infinite;
+  pointer-events: none;
+  z-index: 999;
+}
 
-  .heart {
-    position: fixed;
-    bottom: -30px;
-    width: 80px;
-    height: 80px;
-    background: url('heart.png') no-repeat center;
-    background-size: contain;
-    animation: floatHearts 5s linear infinite;
-    pointer-events: none;
-    z-index: 999;
-  }
+  
+    
+    
+  
 
   @keyframes floatHearts {
     0% { transform: translateY(0) scale(1); opacity: 1; }
